@@ -57,8 +57,8 @@ uv run calendar-app mcp
 Most subcommands accept these options:
 
 ```bash
-# Output in markdown format
-uv run calendar-app events --format markdown
+# Output in JSON format (default is markdown)
+uv run calendar-app events --json
 
 # Filter by date range
 uv run calendar-app events --from 2024-12-01 --to 2024-12-31

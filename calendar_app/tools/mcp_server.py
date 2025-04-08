@@ -14,7 +14,7 @@ def setup_mcp_server(event_store):
 
     @mcp.tool()
     def get_events(from_date: str = None, to_date: str = None, calendars: list = None,
-                  all_day_only: bool = False, busy_only: bool = False, format: str = "markdown"):
+                  all_day_only: bool = False, busy_only: bool = False, json: bool = False):
         """
         Get calendar events for the specified date range.
 
@@ -24,10 +24,10 @@ def setup_mcp_server(event_store):
             calendars: List of calendar names to include (defaults to all)
             all_day_only: Only include all-day events
             busy_only: Only include busy events
-            format: Output format ('json' or 'markdown', defaults to 'markdown')
+            json: Whether to output in JSON format (default: False, outputs markdown)
 
         Returns:
-            List of calendar events (json) or a Markdown formatted string.
+            List of calendar events (if json=True) or a Markdown formatted string.
         """
         from_date_obj = parse_date(from_date) if from_date else None
         to_date_obj = parse_date(to_date) if to_date else None
@@ -43,16 +43,14 @@ def setup_mcp_server(event_store):
 
         events_only_result = {"events": result.get("events", []), "events_error": result.get("events_error")}
 
-        if format.lower() == "markdown":
-            return format_as_markdown(events_only_result)
-        elif format.lower() == "json":
+        if json:
             return events_only_result.get("events", []) # Return only the events list for json
         else:
-            raise ValueError("Invalid format specified. Use 'json' or 'markdown'.")
+            return format_as_markdown(events_only_result) # Default to markdown
 
     @mcp.tool()
     def get_reminders(from_date: str = None, to_date: str = None, calendars: list = None,
-                     include_completed: bool = False, format: str = "markdown"):
+                     include_completed: bool = False, json: bool = False):
         """
         Get reminders for the specified date range.
 
@@ -61,10 +59,10 @@ def setup_mcp_server(event_store):
             to_date: End date in YYYY-MM-DD format (defaults to from_date)
             calendars: List of calendar names to include (defaults to all)
             include_completed: Whether to include completed reminders
-            format: Output format ('json' or 'markdown', defaults to 'markdown')
+            json: Whether to output in JSON format (default: False, outputs markdown)
 
         Returns:
-            List of reminders (json) or a Markdown formatted string.
+            List of reminders (if json=True) or a Markdown formatted string.
         """
         from_date_obj = parse_date(from_date) if from_date else None
         to_date_obj = parse_date(to_date) if to_date else None
@@ -79,55 +77,49 @@ def setup_mcp_server(event_store):
 
         reminders_only_result = {"reminders": result.get("reminders", []), "reminders_error": result.get("reminders_error")}
 
-        if format.lower() == "markdown":
-            return format_as_markdown(reminders_only_result)
-        elif format.lower() == "json":
+        if json:
             return reminders_only_result.get("reminders", []) # Return only the reminders list for json
         else:
-            raise ValueError("Invalid format specified. Use 'json' or 'markdown'.")
+            return format_as_markdown(reminders_only_result) # Default to markdown
 
     @mcp.tool()
-    def list_calendars(format: str = "json"): # Default to json for listing calendars
+    def list_calendars(json: bool = False):
         """
         List all available calendars.
 
         Args:
-            format: Output format ('json' or 'markdown', defaults to 'json')
+            json: Whether to output in JSON format (default: False, outputs markdown)
 
         Returns:
-            Dictionary containing event and reminder calendars (json) or a Markdown list.
+            Dictionary containing event and reminder calendars (if json=True) or a Markdown list.
         """
         calendars_data = event_store.get_calendars()
-        if format.lower() == "markdown":
-            renderer = CalendarListTemplateRenderer(calendars_data)
-            return renderer.generate()
-        elif format.lower() == "json":
+        if json:
             return calendars_data
         else:
-             raise ValueError("Invalid format specified. Use 'json' or 'markdown'.")
+            renderer = CalendarListTemplateRenderer(calendars_data)
+            return renderer.generate()
 
 
     @mcp.tool()
-    def get_today_summary(format: str = "markdown"):
+    def get_today_summary(json: bool = False):
         """
         Get a summary of today's events and reminders.
 
         Args:
-            format: Output format ('json' or 'markdown', defaults to 'markdown')
+            json: Whether to output in JSON format (default: False, outputs markdown)
 
         Returns:
-            Dictionary containing today's events and reminders (json) or a Markdown summary.
+            Dictionary containing today's events and reminders (if json=True) or a Markdown summary.
         """
         result = event_store.get_events_and_reminders() # Gets today by default
-        if format.lower() == "markdown":
-            return format_as_markdown(result)
-        elif format.lower() == "json":
+        if json:
             return result
         else:
-            raise ValueError("Invalid format specified. Use 'json' or 'markdown'.")
+            return format_as_markdown(result)
 
     @mcp.tool()
-    def search(search_term: str, from_date: str = None, to_date: str = None, calendars: list = None, format: str = "markdown"):
+    def search(search_term: str, from_date: str = None, to_date: str = None, calendars: list = None, json: bool = False):
         """
         Search events and reminders within a date range based on a search term.
 
@@ -136,10 +128,10 @@ def setup_mcp_server(event_store):
             from_date: Start date in YYYY-MM-DD format (defaults to today)
             to_date: End date in YYYY-MM-DD format (defaults to from_date)
             calendars: List of calendar names to include (defaults to all)
-            format: Output format ('json' or 'markdown', defaults to 'markdown')
+            json: Whether to output in JSON format (default: False, outputs markdown)
 
         Returns:
-            Filtered list of events and reminders (json) or a Markdown summary.
+            Filtered list of events and reminders (if json=True) or a Markdown summary.
         """
         if not search_term:
             raise ValueError("Search term cannot be empty.")
@@ -184,14 +176,12 @@ def setup_mcp_server(event_store):
             "reminders_error": all_results.get("reminders_error")
         }
 
-        if format.lower() == "markdown":
-            # Reuse the existing markdown renderer
-            return format_as_markdown(final_result)
-        elif format.lower() == "json":
+        if json:
             # Return only the filtered lists for JSON output
             return {"events": filtered_events, "reminders": filtered_reminders}
         else:
-            raise ValueError("Invalid format specified. Use 'json' or 'markdown'.")
+            # Reuse the existing markdown renderer
+            return format_as_markdown(final_result)
 
     @mcp.prompt()
     def daily_agenda(date: str = None):

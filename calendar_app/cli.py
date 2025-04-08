@@ -20,8 +20,8 @@ def setup_common_parser(parser):
                         help="End date (YYYY-MM-DD, defaults to from_date)")
     parser.add_argument("--calendars", "-c", nargs="+", 
                         help="Filter by calendar names (space separated)")
-    parser.add_argument("--format", choices=['json', 'markdown'], default='json', 
-                        help="Output format (default: json)")
+    parser.add_argument("--json", action="store_true", 
+                        help="Output in JSON format (default: markdown)")
     return parser
 
 
@@ -39,11 +39,11 @@ def cmd_events(args, event_store):
     events_only = {"events": result.get("events", []), 
                    "events_error": result.get("events_error")}
 
-    # Output as JSON or Markdown
-    if args.format == 'markdown':
-        print(format_as_markdown(events_only))
-    else:
+    # Output as JSON or Markdown (default)
+    if args.json:
         print(json.dumps(events_only, indent=2))
+    else:
+        print(format_as_markdown(events_only))
 
 
 def cmd_reminders(args, event_store):
@@ -59,11 +59,11 @@ def cmd_reminders(args, event_store):
     reminders_only = {"reminders": result.get("reminders", []), 
                       "reminders_error": result.get("reminders_error")}
 
-    # Output as JSON or Markdown
-    if args.format == 'markdown':
-        print(format_as_markdown(reminders_only))
-    else:
+    # Output as JSON or Markdown (default)
+    if args.json:
         print(json.dumps(reminders_only, indent=2))
+    else:
+        print(format_as_markdown(reminders_only))
 
 
 def cmd_all(args, event_store):
@@ -77,23 +77,23 @@ def cmd_all(args, event_store):
         busy_only=args.busy_only
     )
 
-    # Output as JSON or Markdown
-    if args.format == 'markdown':
-        print(format_as_markdown(result))
-    else:
+    # Output as JSON or Markdown (default)
+    if args.json:
         print(json.dumps(result, indent=2))
+    else:
+        print(format_as_markdown(result))
 
 
 def cmd_calendars(args, event_store):
     """Command handler for 'calendars' subcommand."""
     result = event_store.get_calendars()
     
-    # Handle format
-    if args.format == 'markdown':
+    # Handle format (default to markdown)
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
         renderer = CalendarListTemplateRenderer(result)
         print(renderer.generate())
-    else:
-        print(json.dumps(result, indent=2))
 
 
 def cmd_today(args, event_store):
@@ -106,11 +106,11 @@ def cmd_today(args, event_store):
         busy_only=args.busy_only
     )
 
-    # Output as JSON or Markdown
-    if args.format == 'markdown':
-        print(format_as_markdown(result))
-    else:
+    # Output as JSON or Markdown (default)
+    if args.json:
         print(json.dumps(result, indent=2))
+    else:
+        print(format_as_markdown(result))
 
 
 def cmd_schema(args, event_store):
@@ -183,8 +183,8 @@ def main():
         "calendars", 
         help="List available calendars"
     )
-    calendars_parser.add_argument("--format", choices=['json', 'markdown'], 
-                                 default='json', help="Output format (default: json)")
+    calendars_parser.add_argument("--json", action="store_true", 
+                                 help="Output in JSON format (default: markdown)")
     calendars_parser.set_defaults(func=cmd_calendars)
     
     # 'today' subcommand - shortcuts to today's events and reminders
@@ -200,8 +200,8 @@ def main():
                              help="Only include all-day events")
     today_parser.add_argument("--busy-only", action="store_true", 
                              help="Only include busy events")
-    today_parser.add_argument("--format", choices=['json', 'markdown'], 
-                             default='json', help="Output format (default: json)")
+    today_parser.add_argument("--json", action="store_true", 
+                             help="Output in JSON format (default: markdown)")
     today_parser.set_defaults(func=cmd_today)
     
     # 'schema' subcommand

@@ -91,11 +91,11 @@ def test_mcp_subcommand(mock_print, mock_parse_args, mock_setup_mcp, mock_event_
 @patch("calendar_app.cli.CalendarListTemplateRenderer")
 @patch("calendar_app.cli.argparse.ArgumentParser.parse_args")
 @patch("calendar_app.cli.print")
-def test_calendars_subcommand(mock_print, mock_parse_args, mock_renderer, mock_event_store):
-    """Test CLI lists calendars with 'calendars' subcommand."""
+def test_calendars_subcommand_markdown_default(mock_print, mock_parse_args, mock_renderer, mock_event_store):
+    """Test CLI lists calendars with 'calendars' subcommand with default markdown format."""
     # Setup mocks
     mock_args = MagicMock()
-    mock_args.format = 'markdown'
+    mock_args.json = False  # Default is markdown
     mock_parse_args.return_value = mock_args
     
     mock_event_store_instance = MagicMock()
@@ -120,8 +120,8 @@ def test_calendars_subcommand(mock_print, mock_parse_args, mock_renderer, mock_e
 
 @patch("calendar_app.cli.format_as_markdown")
 @patch("calendar_app.cli.print")
-def test_events_subcommand_markdown(mock_print, mock_format):
-    """Test 'events' subcommand with markdown format."""
+def test_events_subcommand_default_markdown(mock_print, mock_format):
+    """Test 'events' subcommand with default markdown format."""
     # Setup mocks
     mock_args = MagicMock()
     mock_args.from_date = None
@@ -129,7 +129,7 @@ def test_events_subcommand_markdown(mock_print, mock_format):
     mock_args.calendars = None
     mock_args.all_day_only = False
     mock_args.busy_only = False
-    mock_args.format = 'markdown'
+    mock_args.json = False  # Default is markdown
     
     mock_event_store = MagicMock()
     mock_events = {"events": [{"title": "Meeting"}], "reminders": []}
@@ -163,14 +163,14 @@ def test_events_subcommand_markdown(mock_print, mock_format):
 @patch("calendar_app.cli.json.dumps")
 @patch("calendar_app.cli.print")
 def test_reminders_subcommand_json(mock_print, mock_json_dumps):
-    """Test 'reminders' subcommand with json format."""
+    """Test 'reminders' subcommand with explicit json format."""
     # Setup mocks
     mock_args = MagicMock()
     mock_args.from_date = None
     mock_args.to_date = None
     mock_args.calendars = None
     mock_args.include_completed = True
-    mock_args.format = 'json'
+    mock_args.json = True  # Explicitly request JSON
     
     mock_event_store = MagicMock()
     mock_result = {"events": [], "reminders": [{"title": "Task"}]}
@@ -201,15 +201,15 @@ def test_reminders_subcommand_json(mock_print, mock_json_dumps):
 
 @patch("calendar_app.cli.format_as_markdown")
 @patch("calendar_app.cli.print")
-def test_today_subcommand(mock_print, mock_format):
-    """Test 'today' subcommand."""
+def test_today_subcommand_default_markdown(mock_print, mock_format):
+    """Test 'today' subcommand with default markdown output."""
     # Setup mocks
     mock_args = MagicMock()
     mock_args.calendars = ["Work"]
     mock_args.include_completed = False
     mock_args.all_day_only = True
     mock_args.busy_only = False
-    mock_args.format = 'markdown'
+    mock_args.json = False  # Default is markdown
     
     mock_event_store = MagicMock()
     mock_result = {"events": [{"title": "Meeting"}], "reminders": []}
@@ -235,8 +235,8 @@ def test_today_subcommand(mock_print, mock_format):
 
 @patch("calendar_app.cli.format_as_markdown")
 @patch("calendar_app.cli.print")
-def test_all_subcommand(mock_print, mock_format):
-    """Test 'all' subcommand."""
+def test_all_subcommand_default_markdown(mock_print, mock_format):
+    """Test 'all' subcommand with default markdown output."""
     # Setup mocks
     mock_args = MagicMock()
     mock_args.from_date = "2023-01-01"
@@ -245,7 +245,7 @@ def test_all_subcommand(mock_print, mock_format):
     mock_args.include_completed = True
     mock_args.all_day_only = False
     mock_args.busy_only = True
-    mock_args.format = 'markdown'
+    mock_args.json = False  # Default is markdown
     
     mock_event_store = MagicMock()
     mock_result = {"events": [{"title": "Meeting"}], "reminders": [{"title": "Task"}]}
@@ -296,7 +296,7 @@ def test_setup_common_parser():
     assert "--from" in argument_flags
     assert "--to" in argument_flags
     assert "--calendars" in argument_flags or "-c" in argument_flags
-    assert "--format" in argument_flags
+    assert "--json" in argument_flags  # Changed from --format to --json
 
 
 @patch("calendar_app.cli.argparse.ArgumentParser")
