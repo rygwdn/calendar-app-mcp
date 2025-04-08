@@ -1,7 +1,0 @@
-#!/usr/bin/env python3
-"""Entry point script for calendar app."""
-
-from calendar_app.cli import main
-
-if __name__ == "__main__":
-    main()
