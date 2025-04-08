@@ -24,26 +24,56 @@ uv install -e '.[dev]'
 
 ## Usage
 
-This application is designed to be run with the `uv run` command:
+This application is designed to be run with the `uv run` command and uses subcommands for different functionality:
 
 ```bash
-# Run the app with default options (today's events in JSON format)
+# Show help and available subcommands
 uv run calendar-app
 
+# Get today's events and reminders
+uv run calendar-app today
+
+# Get only events
+uv run calendar-app events
+
+# Get only reminders
+uv run calendar-app reminders
+
+# Get both events and reminders
+uv run calendar-app all
+
+# List available calendars
+uv run calendar-app calendars
+
+# Show JSON schema
+uv run calendar-app schema
+
 # Run as MCP server
-uv run calendar-app --mcp
+uv run calendar-app mcp
+```
 
-# List all calendars
-uv run calendar-app --list-calendars
+### Common Options
 
-# View JSON schema
-uv run calendar-app --schema
+Most subcommands accept these options:
 
+```bash
 # Output in markdown format
-uv run calendar-app --format markdown
+uv run calendar-app events --format markdown
 
 # Filter by date range
-uv run calendar-app --from 2024-12-01 --to 2024-12-31
+uv run calendar-app events --from 2024-12-01 --to 2024-12-31
+
+# Filter by specific calendars
+uv run calendar-app events --calendars "Work" "Personal"
+
+# Only show all-day events
+uv run calendar-app events --all-day-only
+
+# Only show busy events
+uv run calendar-app events --busy-only
+
+# Include completed reminders
+uv run calendar-app reminders --include-completed
 ```
 
 ## Development
