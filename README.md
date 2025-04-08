@@ -19,30 +19,37 @@ uv install .
 
 Run as standalone script:
 ```bash
-uvx calendar-app
+# Using the executable script
+./calendar-app
+
+# Using python module
+python -m calendar_app.cli
+
+# Using the installed script
+calendar-app
 ```
 
 Run as MCP server:
 ```bash
-uvx calendar-app --mcp
+./calendar-app --mcp
 ```
 
 List all calendars:
 ```bash
-uvx calendar-app --list-calendars
+./calendar-app --list-calendars
 ```
 
 View JSON schema:
 ```bash
-uvx calendar-app --schema
+./calendar-app --schema
 ```
 
 Output in markdown format:
 ```bash
-uvx calendar-app --format markdown
+./calendar-app --format markdown
 ```
 
 Filter by date range:
 ```bash
-uvx calendar-app --from 2024-12-01 --to 2024-12-31
+./calendar-app --from 2024-12-01 --to 2024-12-31
 ```
