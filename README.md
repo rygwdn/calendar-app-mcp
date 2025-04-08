@@ -78,6 +78,20 @@ uv run calendar-app reminders --include-completed
 
 ## Development
 
+### Using UV with Public PyPI Registry
+
+To ensure UV uses the public PyPI registry rather than any locally configured repositories:
+
+```bash
+# Generate a lock file using only PyPI
+uv lock --no-config
+
+# Install dependencies using only PyPI
+uv install --no-config
+```
+
+The `--no-config` flag tells UV to ignore any system-level configuration and use only the project configuration.
+
 ### Running Tests
 
 Run all tests:

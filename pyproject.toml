@@ -39,3 +39,9 @@ omit = ["*/__init__.py", "*/__main__.py"]
 # This makes the package accessible via `uv run`
 [project.scripts]
 calendar-app = "calendar_app.cli:main"
+
+# Override the extra-index-url from the global config
+[tool.uv]
+index-url = "https://pypi.org/simple"
+extra-index-url = []
+index-strategy = "unsafe-best-match"
