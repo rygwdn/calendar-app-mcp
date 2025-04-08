@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "calendar-app"
+version = "0.1.0"
+description = "Calendar app MCP for accessing macOS Calendar events and reminders"
+requires-python = ">= 3.12"
+dependencies = [
+    "pyobjc-framework-EventKit",
+    "fastmcp",
+    "jinja2>=3.1.2",
+]
+
+[project.scripts]
+calendar-app = "calendar_app.cli:main"
+
+[tool.uvx]
+entry-point = "calendar_app.cli:main"
