@@ -20,9 +20,6 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 
-[project.scripts]
-calendar-app = "calendar_app.cli:main"
-
 [tool.hatch.build.targets.wheel]
 packages = ["calendar_app"]
 
@@ -39,6 +36,6 @@ markers = [
 source = ["calendar_app"]
 omit = ["*/__init__.py", "*/__main__.py"]
 
-[tool.uvx]
-name = "calendar-app"
-entry-point = "calendar_app.cli:main"
+# This makes the package accessible via `uv run`
+[project.scripts]
+calendar-app = "calendar_app.cli:main"

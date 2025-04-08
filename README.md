@@ -12,8 +12,11 @@ A modern calendar application that integrates with macOS Calendar and provides d
 ## Installation
 
 ```bash
-# Install basic package
-uv install .
+# Install uv package manager if not already installed
+# https://github.com/astral-sh/uv
+
+# Install the package in development mode
+uv install -e .
 
 # Install with development dependencies (for testing)
 uv install -e '.[dev]'
@@ -21,41 +24,26 @@ uv install -e '.[dev]'
 
 ## Usage
 
-Run as standalone script:
+This application is designed to be run with the `uv run` command:
+
 ```bash
-# Using the executable script
-./calendar-app
+# Run the app with default options (today's events in JSON format)
+uv run calendar-app
 
-# Using python module
-python -m calendar_app.cli
+# Run as MCP server
+uv run calendar-app --mcp
 
-# Using the installed script
-calendar-app
-```
+# List all calendars
+uv run calendar-app --list-calendars
 
-Run as MCP server:
-```bash
-./calendar-app --mcp
-```
+# View JSON schema
+uv run calendar-app --schema
 
-List all calendars:
-```bash
-./calendar-app --list-calendars
-```
+# Output in markdown format
+uv run calendar-app --format markdown
 
-View JSON schema:
-```bash
-./calendar-app --schema
-```
-
-Output in markdown format:
-```bash
-./calendar-app --format markdown
-```
-
-Filter by date range:
-```bash
-./calendar-app --from 2024-12-01 --to 2024-12-31
+# Filter by date range
+uv run calendar-app --from 2024-12-01 --to 2024-12-31
 ```
 
 ## Development
