@@ -12,7 +12,11 @@ A modern calendar application that integrates with macOS Calendar and provides d
 ## Installation
 
 ```bash
+# Install basic package
 uv install .
+
+# Install with development dependencies (for testing)
+uv install -e '.[dev]'
 ```
 
 ## Usage
@@ -52,4 +56,28 @@ Output in markdown format:
 Filter by date range:
 ```bash
 ./calendar-app --from 2024-12-01 --to 2024-12-31
+```
+
+## Development
+
+### Running Tests
+
+Run all tests:
+```bash
+python -m pytest
+```
+
+Run tests with coverage report:
+```bash
+python -m pytest --cov=calendar_app
+```
+
+Run specific test file:
+```bash
+python -m pytest tests/unit/utils/test_date_utils.py
+```
+
+Run specific test:
+```bash
+python -m pytest tests/unit/utils/test_date_utils.py::TestParseDate::test_valid_date
 ```
