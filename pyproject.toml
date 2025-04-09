@@ -18,6 +18,10 @@ dev = [
     "pytest>=7.0.0",
     "pytest-mock>=3.10.0",
     "pytest-cov>=4.1.0",
+    "ruff>=0.11.0",
+    "black>=23.0.0",
+    "pytest-black>=0.3.0",
+    "pytest-ruff>=0.1.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -29,7 +33,9 @@ python_files = "test_*.py"
 python_functions = "test_*"
 markers = [
     "unit: marks tests as unit tests",
-    "integration: marks tests as integration tests",
+    "integration: marks tests as integration tests", 
+    "black: run the black formatter on all Python files",
+    "ruff: run the ruff linter on Python files",
 ]
 
 [tool.coverage.run]
@@ -45,3 +51,18 @@ calendar-app = "calendar_app.cli:main"
 index-url = "https://pypi.org/simple"
 extra-index-url = []
 index-strategy = "unsafe-best-match"
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+select = ["E", "F", "W", "I", "N", "B", "C4", "EM", "Q", "T20", "UP", "ANN", "FLY", "LOG", "RUF", "SIM"]
+ignore = ["ANN101", "ANN102", "ANN401"]  # Allow missing type annotations for self, cls, and Any
+
+[tool.ruff.isort]
+known-first-party = ["calendar_app"]
+

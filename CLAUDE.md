@@ -3,15 +3,18 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Commands
-- Run script: `python calendar-events.py` or `./calendar-events.py`
-- Run as MCP server: `python calendar-events.py --mcp`
-- List calendars: `python calendar-events.py --list-calendars`
-- JSON schema: `python calendar-events.py --schema`
-- Format output: Add `--format markdown` or `--format json` (default)
+- Run calendar app: `uv run calendar-app`
+- Run as MCP server: `uv run calendar-app mcp`
+- List calendars: `uv run calendar-app calendars`
+- JSON schema: `uv run calendar-app schema`
+- Format output: Add `--json` flag (default is markdown)
+- Run tests: `uv run pytest`
+- Run tests with linting: `uv run pytest --black --ruff`
 
 ## Code Style Guidelines
 - **Imports**: Group standard library imports first, followed by third-party imports
-- **Formatting**: Use 4-space indentation
+- **Formatting**: Use Black code formatter with 100 character line length
+- **Linting**: Use Ruff for code linting
 - **Type Hints**: Use Python type hints for function parameters where appropriate
 - **Error Handling**: Use try/except blocks with specific exceptions
 - **Documentation**: Include docstrings for all functions and classes
