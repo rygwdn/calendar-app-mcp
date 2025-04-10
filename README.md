@@ -1,6 +1,6 @@
 # Calendar App MCP
 
-An MCP (Model Completion Protocol) server that provides access to macOS Calendar.app events and reminders for use with Claude and other AI assistants.
+An MCP (Model Context Protocol) server that provides access to macOS Calendar.app events and reminders for use with Claude and other AI assistants.
 
 ## MCP Integration
 
