@@ -1,7 +1,8 @@
 """Date utility functions for calendar app."""
 
-import datetime
 import argparse
+import datetime
+
 from Foundation import NSDate
 
 
@@ -10,7 +11,8 @@ def parse_date(date_str):
     try:
         return datetime.datetime.strptime(date_str, "%Y-%m-%d")
     except ValueError:
-        raise argparse.ArgumentTypeError(f"Invalid date format: {date_str}. Use YYYY-MM-DD.")
+        msg = f"Invalid date format: {date_str}. Use YYYY-MM-DD."
+        raise argparse.ArgumentTypeError(msg)
 
 
 def get_date_range(from_date, to_date):

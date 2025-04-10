@@ -54,7 +54,7 @@ class TestGetDateRange:
         # Verify
         assert start_date == mock_start_date
         assert end_date == mock_end_date
-        
+
         # Check timestamps passed to NSDate
         call_args = mock_nsdate.dateWithTimeIntervalSince1970_.call_args_list
         assert len(call_args) == 2
@@ -66,21 +66,21 @@ class TestGetDateRange:
         # Setup mocks for datetime module
         now = datetime.datetime(2023, 1, 15, 12, 30, 45)
         mock_datetime_module.datetime.now.return_value = now
-        
+
         # Create real datetime objects (not mocked) for the function to use
         start_datetime = datetime.datetime(2023, 1, 15, 0, 0, 0)
         end_datetime = datetime.datetime(2023, 1, 15, 23, 59, 59)
-        
+
         # Make the datetime constructor return our predefined objects
         def mock_datetime_init(year, month, day, hour=0, minute=0, second=0):
             if hour == 0 and minute == 0 and second == 0:
                 return start_datetime
             else:
                 return end_datetime
-                
+
         # Apply the mock implementation
         mock_datetime_module.datetime.side_effect = mock_datetime_init
-            
+
         # Mock NSDate
         mock_start_date = "mocked_start_date"
         mock_end_date = "mocked_end_date"

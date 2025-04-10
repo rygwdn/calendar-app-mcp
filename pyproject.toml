@@ -60,9 +60,21 @@ include = '\.pyi?$'
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-select = ["E", "F", "W", "I", "N", "B", "C4", "EM", "Q", "T20", "UP", "ANN", "FLY", "LOG", "RUF", "SIM"]
-ignore = ["ANN101", "ANN102", "ANN401"]  # Allow missing type annotations for self, cls, and Any
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "C4", "EM", "Q", "T20", "UP", "ANN", "FLY", "LOG", "RUF", "SIM"]
+ignore = [
+    "ANN001", "ANN101", "ANN102", "ANN201", "ANN202", "ANN204", "ANN401",  # Allow missing type annotations
+    "T201",  # Allow print statements
+    "B904",  # Allow raise without from
+    "EM101", "EM102",  # Allow string literals in exceptions
+    "E501",  # Allow long lines
+    "RUF013"  # Allow implicit Optional
+]
+
+[tool.ruff.lint.isort]
 known-first-party = ["calendar_app"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "S", "T", "E", "W", "F", "I", "SIM", "F4", "F8"]
 

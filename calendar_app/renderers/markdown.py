@@ -1,8 +1,9 @@
 """Markdown template renderers for calendar events and reminders."""
 
-import sys
 import datetime
-from jinja2 import Environment, BaseLoader, StrictUndefined
+import sys
+
+from jinja2 import BaseLoader, Environment, StrictUndefined
 
 
 def format_as_markdown(result):
@@ -86,42 +87,52 @@ No events or reminders found for the specified criteria.
 {% endif %}
 """
 
-    def __init__(self, calendar_data):
+    def __init__(self, calendar_data) -> None:
         self.calendar_data = calendar_data
 
         # Create a Jinja2 environment
         self.env = Environment(loader=BaseLoader(), undefined=StrictUndefined)
 
         # Add template functions
-        self.env.globals.update({
-            'datetime': datetime,
-            'format_date': self.format_date,
-            'format_time_range': self.format_time_range,
-            'sort_events': self.sort_events,
-            'sort_reminders': self.sort_reminders,
-        })
+        self.env.globals.update(
+            {
+                "datetime": datetime,
+                "format_date": self.format_date,
+                "format_time_range": self.format_time_range,
+                "sort_events": self.sort_events,
+                "sort_reminders": self.sort_reminders,
+            }
+        )
 
         self.template = self.env.from_string(self.TEMPLATE)
 
     def format_date(self, date_str):
         """Format a date string as YYYY-MM-DD."""
         if not date_str:
-            return ''
+            return ""
         try:
             dt = datetime.datetime.fromisoformat(date_str.replace(" +0000", "+00:00"))
-            return dt.strftime('%Y-%m-%d')
+            return dt.strftime("%Y-%m-%d")
         except (ValueError, AttributeError):
             return date_str
 
     def format_time_range(self, start_time_str, end_time_str):
         """Format a time range from start and end time strings."""
         if not start_time_str:
-            return ''
+            return ""
 
         try:
             # Parse the ISO format dates
-            start_dt = datetime.datetime.fromisoformat(start_time_str.replace(" +0000", "+00:00")) if start_time_str else None
-            end_dt = datetime.datetime.fromisoformat(end_time_str.replace(" +0000", "+00:00")) if end_time_str else None
+            start_dt = (
+                datetime.datetime.fromisoformat(start_time_str.replace(" +0000", "+00:00"))
+                if start_time_str
+                else None
+            )
+            end_dt = (
+                datetime.datetime.fromisoformat(end_time_str.replace(" +0000", "+00:00"))
+                if end_time_str
+                else None
+            )
 
             # Format times
             start_fmt = start_dt.strftime("%H:%M") if start_dt else ""
@@ -132,32 +143,32 @@ No events or reminders found for the specified criteria.
             elif start_fmt:
                 return start_fmt
             else:
-                return ''
+                return ""
         except (ValueError, AttributeError):
             # Fallback to original strings if parsing fails
             return f"{start_time_str} - {end_time_str}".strip(" -")
 
     def sort_events(self, events):
         """Sort events by start time."""
-        return sorted(events, key=lambda x: x.get('start_time') or '')
+        return sorted(events, key=lambda x: x.get("start_time") or "")
 
     def sort_reminders(self, reminders):
         """Sort reminders by completion status and due date."""
-        return sorted(reminders, key=lambda x: (x.get('completed', False), x.get('due_date') or ''))
+        return sorted(reminders, key=lambda x: (x.get("completed", False), x.get("due_date") or ""))
 
     def generate(self):
         """Generate complete Markdown report using templates."""
         # Prepare the template context
         context = {
-            'events': self.calendar_data.get('events', []),
-            'reminders': self.calendar_data.get('reminders', []),
-            'events_error': self.calendar_data.get('events_error'),
-            'reminders_error': self.calendar_data.get('reminders_error'),
+            "events": self.calendar_data.get("events", []),
+            "reminders": self.calendar_data.get("reminders", []),
+            "events_error": self.calendar_data.get("events_error"),
+            "reminders_error": self.calendar_data.get("reminders_error"),
         }
 
         # Render the template
         try:
             return self.template.render(**context).strip()
         except Exception as e:
-            print(f"Error rendering template: {str(e)}", file=sys.stderr)
-            return f"Error rendering calendar data: {str(e)}"
+            print(f"Error rendering template: {e!s}", file=sys.stderr)
+            return f"Error rendering calendar data: {e!s}"

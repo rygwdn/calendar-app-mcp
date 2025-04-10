@@ -50,22 +50,20 @@ def mock_event_store():
     with patch("calendar_app.models.event_store.CalendarEventStore") as mock_cls:
         mock_store = MagicMock()
         mock_cls.return_value = mock_store
-        
+
         # Configure default behaviors
         mock_store.event_authorized = True
         mock_store.reminder_authorized = True
-        
+
         # Sample data for calendars
         mock_store.get_calendars.return_value = {
             "event_calendars": [
                 {"title": "Work", "color": "#FF0000", "type": "Event"},
-                {"title": "Personal", "color": "#00FF00", "type": "Event"}
+                {"title": "Personal", "color": "#00FF00", "type": "Event"},
             ],
-            "reminder_calendars": [
-                {"title": "Tasks", "color": "#0000FF", "type": "Reminder"}
-            ]
+            "reminder_calendars": [{"title": "Tasks", "color": "#0000FF", "type": "Reminder"}],
         }
-        
+
         # Sample data for events and reminders
         mock_store.get_events_and_reminders.return_value = {
             "events": [
@@ -75,7 +73,7 @@ def mock_event_store():
                     "start_time": "2023-01-15 10:00:00",
                     "end_time": "2023-01-15 11:00:00",
                     "all_day": False,
-                    "calendar": "Work"
+                    "calendar": "Work",
                 }
             ],
             "reminders": [
@@ -83,9 +81,9 @@ def mock_event_store():
                     "title": "Buy groceries",
                     "due_date": "2023-01-15 18:00:00",
                     "completed": False,
-                    "calendar": "Personal"
+                    "calendar": "Personal",
                 }
-            ]
+            ],
         }
-        
+
         yield mock_store

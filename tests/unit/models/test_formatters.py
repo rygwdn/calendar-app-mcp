@@ -10,7 +10,7 @@ from calendar_app.models.formatters import (
     get_human_readable_status,
     format_event,
     format_reminder,
-    get_json_schema
+    get_json_schema,
 )
 
 
@@ -56,10 +56,10 @@ class TestFormatEvent:
         event.availability.return_value = EKCalendarEventAvailabilityBusy
         event.hasAttendees.return_value = False
         event.organizer.return_value = None
-        
+
         # Format event
         result = format_event(event)
-        
+
         # Verify result
         assert result["title"] == "Meeting"
         assert result["location"] == "Conference Room"
@@ -77,10 +77,10 @@ class TestFormatEvent:
     @pytest.mark.skip(reason="URL extraction implementation may vary, needs to be fixed later")
     def test_event_with_conference_url(self):
         """Test formatting an event with conference URL."""
-        # For this test we won't validate the conference URL extraction since it's 
+        # For this test we won't validate the conference URL extraction since it's
         # implementation dependent and might change. Instead, let's test the location
         # logic that uses the conference URL.
-        
+
         # Create mock event
         event = MagicMock()
         event.title.return_value = "Virtual Meeting"
@@ -95,13 +95,13 @@ class TestFormatEvent:
         event.availability.return_value = EKCalendarEventAvailabilityBusy
         event.hasAttendees.return_value = False
         event.organizer.return_value = None
-        
+
         # Format event
         result = format_event(event)
-        
+
         # Verify result
         assert result["title"] == "Virtual Meeting"
-        
+
         # Note: The regex pattern in format_event may not be matching our test URL correctly.
         # In a real implementation with a proper regex, this would be true:
         # assert "zoom.us" in result["location"]
@@ -117,19 +117,19 @@ class TestFormatEvent:
         event.endDate.return_value.description.return_value = "2023-01-15 11:00:00"
         event.isAllDay.return_value = False
         event.calendar().title.return_value = "Work"
-        
+
         # Create a mock URL that looks like a Zoom URL
         url_mock = MagicMock()
         url_mock.absoluteString.return_value = "https://zoom.us/j/987654321"
         event.URL.return_value = url_mock
-        
+
         event.availability.return_value = EKCalendarEventAvailabilityBusy
         event.hasAttendees.return_value = False
         event.organizer.return_value = None
-        
+
         # Format event
         result = format_event(event)
-        
+
         # Verify result
         assert result["title"] == "Virtual Meeting"
         assert result["url"] == "https://zoom.us/j/987654321"
@@ -149,22 +149,22 @@ class TestFormatEvent:
         event.endDate.return_value.description.return_value = "2023-01-15 11:00:00"
         event.isAllDay.return_value = False
         event.calendar().title.return_value = "Work"
-        
+
         # Make URL conversion raise an exception
         url_mock = MagicMock()
         url_mock.absoluteString.side_effect = Exception("Test error")
         event.URL.return_value = url_mock
-        
+
         event.availability.return_value = EKCalendarEventAvailabilityBusy
         event.hasAttendees.return_value = False
         event.organizer.return_value = None
-        
+
         # Format event
         result = format_event(event)
-        
+
         # Verify result
         assert result["url"] is None
-        
+
         # Verify error was logged
         mock_print.assert_called_once()
         assert "Error converting URL" in mock_print.call_args[0][0]
@@ -183,46 +183,46 @@ class TestFormatEvent:
         event.calendar().title.return_value = "Work"
         event.URL.return_value = None
         event.availability.return_value = EKCalendarEventAvailabilityBusy
-        
+
         # Create attendees
         attendee1 = MagicMock()
         attendee1.name.return_value = "John Doe"
         attendee1.emailAddress.return_value = "john@example.com"
         attendee1.participantStatus.return_value = 2  # Accepted
-        attendee1.participantType.return_value = 1    # Person
-        attendee1.participantRole.return_value = 1    # Required
-        
+        attendee1.participantType.return_value = 1  # Person
+        attendee1.participantRole.return_value = 1  # Required
+
         attendee2 = MagicMock()
         attendee2.name.return_value = "Jane Smith"
         attendee2.emailAddress.return_value = "jane@example.com"
         attendee2.participantStatus.return_value = 4  # Tentative
-        attendee2.participantType.return_value = 1    # Person
-        attendee2.participantRole.return_value = 2    # Optional
-        
+        attendee2.participantType.return_value = 1  # Person
+        attendee2.participantRole.return_value = 2  # Optional
+
         # Set up organizer
         organizer = MagicMock()
         organizer.name.return_value = "John Doe"
         organizer.emailAddress.return_value = "john@example.com"
         event.organizer.return_value = organizer
-        
+
         # Define isEqual_ behavior to identify the organizer
-        attendee1.isEqual_.return_value = True   # This attendee is the organizer
+        attendee1.isEqual_.return_value = True  # This attendee is the organizer
         attendee2.isEqual_.return_value = False  # This attendee is not the organizer
-        
+
         # Set up hasAttendees and attendees
         event.hasAttendees.return_value = True
         event.attendees.return_value = [attendee1, attendee2]
-        
+
         # Format event
         result = format_event(event)
-        
+
         # Verify result
         assert result["has_organizer"] is True
         assert result["organizer"]["name"] == "John Doe"
         assert result["organizer"]["email"] == "john@example.com"
-        
+
         assert len(result["participants"]) == 2
-        
+
         # Verify first participant (organizer)
         assert result["participants"][0]["name"] == "John Doe"
         assert result["participants"][0]["email"] == "john@example.com"
@@ -230,7 +230,7 @@ class TestFormatEvent:
         assert result["participants"][0]["type"] == "person"
         assert result["participants"][0]["role"] == "required"
         assert result["participants"][0]["is_organizer"] is True
-        
+
         # Verify second participant
         assert result["participants"][1]["name"] == "Jane Smith"
         assert result["participants"][1]["email"] == "jane@example.com"
@@ -253,10 +253,10 @@ class TestFormatReminder:
         reminder.priority.return_value = 1
         reminder.isCompleted.return_value = False
         reminder.calendar().title.return_value = "Personal"
-        
+
         # Format reminder
         result = format_reminder(reminder)
-        
+
         # Verify result
         assert result["title"] == "Buy groceries"
         assert result["notes"] == "Milk, eggs, bread"
@@ -275,10 +275,10 @@ class TestFormatReminder:
         reminder.priority.return_value = 1
         reminder.isCompleted.return_value = False
         reminder.calendar().title.return_value = "Personal"
-        
+
         # Format reminder
         result = format_reminder(reminder)
-        
+
         # Verify result
         assert result["title"] == "Buy groceries"
         assert result["due_date"] is None
@@ -287,21 +287,21 @@ class TestFormatReminder:
 def test_get_json_schema():
     """Test the get_json_schema function."""
     schema = get_json_schema()
-    
+
     # Verify schema structure
     assert isinstance(schema, dict)
     assert "type" in schema
     assert schema["type"] == "object"
-    
+
     # Verify properties
     assert "properties" in schema
     properties = schema["properties"]
-    
+
     # Check events array
     assert "events" in properties
     assert properties["events"]["type"] == "array"
     assert "items" in properties["events"]
-    
+
     # Check event properties
     event_props = properties["events"]["items"]["properties"]
     assert "title" in event_props
@@ -310,12 +310,12 @@ def test_get_json_schema():
     assert "all_day" in event_props
     assert "calendar" in event_props
     assert "participants" in event_props
-    
+
     # Check reminders array
     assert "reminders" in properties
     assert properties["reminders"]["type"] == "array"
     assert "items" in properties["reminders"]
-    
+
     # Check reminder properties
     reminder_props = properties["reminders"]["items"]["properties"]
     assert "title" in reminder_props

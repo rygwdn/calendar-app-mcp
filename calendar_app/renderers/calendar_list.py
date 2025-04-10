@@ -1,7 +1,8 @@
 """Calendar list template renderer."""
 
 import sys
-from jinja2 import Environment, BaseLoader, StrictUndefined
+
+from jinja2 import BaseLoader, Environment, StrictUndefined
 
 
 class CalendarListTemplateRenderer:
@@ -33,16 +34,20 @@ No calendars found or access denied.
 {% endif %}
 """
 
-    def __init__(self, calendars_data):
+    def __init__(self, calendars_data) -> None:
         self.calendars_data = calendars_data
 
         # Create a Jinja2 environment
         self.env = Environment(loader=BaseLoader(), undefined=StrictUndefined)
 
         # Add template functions
-        self.env.globals.update({
-            'sort_calendars': lambda calendars: sorted(calendars, key=lambda x: x.get('title', ''))
-        })
+        self.env.globals.update(
+            {
+                "sort_calendars": lambda calendars: sorted(
+                    calendars, key=lambda x: x.get("title", "")
+                )
+            }
+        )
 
         self.template = self.env.from_string(self.TEMPLATE)
 
@@ -50,15 +55,15 @@ No calendars found or access denied.
         """Generate complete Markdown report using templates."""
         # Prepare the template context
         context = {
-            'event_calendars': self.calendars_data.get('event_calendars', []),
-            'reminder_calendars': self.calendars_data.get('reminder_calendars', []),
-            'events_error': self.calendars_data.get('events_error'),
-            'reminders_error': self.calendars_data.get('reminders_error'),
+            "event_calendars": self.calendars_data.get("event_calendars", []),
+            "reminder_calendars": self.calendars_data.get("reminder_calendars", []),
+            "events_error": self.calendars_data.get("events_error"),
+            "reminders_error": self.calendars_data.get("reminders_error"),
         }
 
         # Render the template
         try:
             return self.template.render(**context).strip()
         except Exception as e:
-            print(f"Error rendering template: {str(e)}", file=sys.stderr)
-            return f"Error rendering calendar list: {str(e)}"
+            print(f"Error rendering template: {e!s}", file=sys.stderr)
+            return f"Error rendering calendar list: {e!s}"
