@@ -1,13 +1,29 @@
 # Calendar App MCP
 
-A modern calendar application that integrates with macOS Calendar and provides data through an MCP interface.
+An MCP (Model Completion Protocol) server that provides access to macOS Calendar.app events and reminders for use with Claude and other AI assistants.
+
+## MCP Integration
+
+This package can be run as an MCP server to integrate with Claude and other AI assistants supporting the MCP protocol, enabling them to access and interact with your macOS calendar data.
+
+```bash
+# Run as MCP server for AI assistant integration
+uv run calendar-app mcp
+```
+
+Once running, Claude can interact with your calendar data through the MCP protocol, allowing it to:
+- Check your upcoming events
+- Find free time slots
+- View event details
+- Access reminders
+- Filter events by calendar, date range, and more
 
 ## Features
 
-- Access macOS Calendar events and reminders
-- Filter by date range, calendar names, and other criteria
+- Access macOS Calendar.app events and reminders
+- Filter by date range, calendar names, and all-day/busy status
 - Format output as JSON or Markdown
-- Run as an MCP server for Claude integration
+- Secure, local access to calendar data
 
 ## Installation
 
@@ -15,20 +31,20 @@ A modern calendar application that integrates with macOS Calendar and provides d
 # Install uv package manager if not already installed
 # https://github.com/astral-sh/uv
 
-# Install the package in development mode
+# Install the package
 uv install -e .
 
 # Install with development dependencies (for testing)
 uv install -e '.[dev]'
 ```
 
-## Usage
+## CLI Usage
 
-This application is designed to be run with the `uv run` command and uses subcommands for different functionality:
+In addition to functioning as an MCP server, this package can be used as a command-line tool to access calendar data directly:
 
 ```bash
-# Show help and available subcommands
-uv run calendar-app
+# List available calendars
+uv run calendar-app calendars
 
 # Get today's events and reminders
 uv run calendar-app today
@@ -42,17 +58,11 @@ uv run calendar-app reminders
 # Get both events and reminders
 uv run calendar-app all
 
-# List available calendars
-uv run calendar-app calendars
-
 # Show JSON schema
 uv run calendar-app schema
-
-# Run as MCP server
-uv run calendar-app mcp
 ```
 
-### Common Options
+### Command Options
 
 Most subcommands accept these options:
 
