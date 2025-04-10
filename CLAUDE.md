@@ -10,6 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Format output: Add `--json` flag (default is markdown)
 - Run tests: `uv run pytest`
 - Run tests with linting: `uv run pytest --black --ruff`
+- Generate lock file with PyPI: `UV_NO_CONFIG=1 uv lock`
+- Install dependencies with PyPI: `UV_NO_CONFIG=1 uv install`
 
 ## Code Style Guidelines
 - **Imports**: Group standard library imports first, followed by third-party imports

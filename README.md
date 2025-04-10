@@ -84,13 +84,13 @@ To ensure UV uses the public PyPI registry rather than any locally configured re
 
 ```bash
 # Generate a lock file using only PyPI
-uv lock --no-config
+UV_NO_CONFIG=1 uv lock
 
 # Install dependencies using only PyPI
-uv install --no-config
+UV_NO_CONFIG=1 uv install
 ```
 
-The `--no-config` flag tells UV to ignore any system-level configuration and use only the project configuration.
+The `UV_NO_CONFIG=1` environment variable tells UV to ignore any system-level configuration and use only the public PyPI registry.
 
 ### Running Tests
 
