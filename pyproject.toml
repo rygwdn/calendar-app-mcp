@@ -6,12 +6,34 @@ build-backend = "hatchling.build"
 name = "calendar-app-mcp"
 version = "0.1.0"
 description = "Calendar app MCP for accessing macOS Calendar events and reminders"
+readme = "README.md"
 requires-python = ">= 3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Ryan Wooden", email = "rygwdn@gmail.com"},
+]
+keywords = ["calendar", "mcp", "macos", "claude", "ai", "assistant"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: MacOS :: MacOS X",
+    "Topic :: Office/Business :: Scheduling",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
 dependencies = [
     "pyobjc-framework-EventKit",
     "fastmcp",
     "jinja2>=3.1.2",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/rygwdn/calendar-app-mcp"
+"Bug Tracker" = "https://github.com/rygwdn/calendar-app-mcp/issues"
+"Source Code" = "https://github.com/rygwdn/calendar-app-mcp"
 
 [project.optional-dependencies]
 dev = [
@@ -22,6 +44,8 @@ dev = [
     "black>=23.0.0",
     "pytest-black>=0.3.0",
     "pytest-ruff>=0.1.0",
+    "build>=1.0.0",
+    "twine>=4.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]
