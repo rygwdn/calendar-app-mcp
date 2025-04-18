@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run as MCP server: `uv run calendar-app mcp`, `uvx calendar-app-mcp` (no args needed), or `uvx calendar-app-mcp mcp`
 - List calendars: `uv run calendar-app calendars` or `uvx calendar-app-mcp calendars`
 - JSON schema: `uv run calendar-app schema` or `uvx calendar-app-mcp schema`
+- Show version: `uv run calendar-app --version`, `uv run calendar-app version` or `uvx calendar-app-mcp --version`
 - Format output: Add `--json` flag (default is markdown)
 - Run tests: `uv run pytest`
 - Run tests with linting: `uv run pytest --black --ruff`

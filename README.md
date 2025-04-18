@@ -115,6 +115,11 @@ uvx calendar-app-mcp all
 
 # Show JSON schema
 uvx calendar-app-mcp schema
+
+# Check version
+uvx calendar-app-mcp --version
+# or 
+uvx calendar-app-mcp version
 ```
 
 ### Command Options
