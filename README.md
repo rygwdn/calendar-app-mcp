@@ -177,7 +177,7 @@ To publish a new version to PyPI:
 5. Verify the package can be installed: `uvx calendar-app-mcp@latest --version`
 6. Create and push a version tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
 
-See the `CLAUDE.md` file for more detailed instructions including testing with TestPyPI.
+See the `CLAUDE.md` file for more detailed instructions.
 
 ### Running Tests
 
