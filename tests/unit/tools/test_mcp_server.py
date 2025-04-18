@@ -3,12 +3,12 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+import fastmcp
 
 from calendar_app.tools.mcp_server import setup_mcp_server
 
 
-@patch("calendar_app.tools.mcp_server.FastMCP")
+@patch("calendar_app.tools.mcp_server.fastmcp.FastMCP")
 def test_setup_mcp_server(mock_fastmcp):
     """Test setting up the MCP server."""
     # Mock FastMCP instance
@@ -30,6 +30,9 @@ def test_setup_mcp_server(mock_fastmcp):
     # Verify that the prompt function was registered
     assert mock_mcp.prompt.call_count >= 1  # We have at least 1 prompt
 
+    # Verify that resource functions were registered
+    assert mock_mcp.resource.call_count >= 2  # We have at least 2 resources
+
     # Verify result
     assert result == mock_mcp
 
@@ -40,21 +43,26 @@ def test_mcp_tools_registered():
     mock_mcp = MagicMock()
     mock_event_store = MagicMock()
 
-    # Create a list to capture registered function names
-    registered_functions = []
+    # Create lists to capture registered function names
+    registered_tools = []
+    registered_resources = []
 
-    # Define a side effect to capture function names
+    # Define side effects to capture function names
     def capture_tool(func=None):
         if func is not None:
-            registered_functions.append(func.__name__)
-        return lambda f: registered_functions.append(f.__name__)
+            registered_tools.append(func.__name__)
+        return lambda f: registered_tools.append(f.__name__)
+
+    def capture_resource(path=None):
+        return lambda f: registered_resources.append(f.__name__)
 
     # Configure the mock MCP
     mock_mcp.tool = capture_tool
+    mock_mcp.resource = capture_resource
     mock_mcp.prompt = lambda func=None: (lambda f: None) if func is None else None
 
     # Mock FastMCP
-    with patch("calendar_app.tools.mcp_server.FastMCP", return_value=mock_mcp):
+    with patch("calendar_app.tools.mcp_server.fastmcp.FastMCP", return_value=mock_mcp):
         # Call function
         setup_mcp_server(mock_event_store)
 
@@ -68,6 +76,15 @@ def test_mcp_tools_registered():
     ]
 
     for tool in expected_tools:
+        assert tool in registered_tools, f"Expected tool {tool} not found in registered tools"
+
+    # Verify that all expected resources were registered
+    expected_resources = [
+        "get_events_by_date",
+        "get_calendar_list",
+    ]
+
+    for resource in expected_resources:
         assert (
-            tool in registered_functions
-        ), f"Expected tool {tool} not found in registered functions"
+            resource in registered_resources
+        ), f"Expected resource {resource} not found in registered resources"

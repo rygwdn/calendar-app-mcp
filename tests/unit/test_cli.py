@@ -18,7 +18,7 @@ def test_help_output_when_no_command(mock_parse_args, mock_event_store):
     # Setup mock without the 'func' attribute to simulate no command
     mock_args = MagicMock(spec=[])
     mock_parse_args.return_value = mock_args
-    
+
     # Mock os.path.basename to simulate regular calendar-app executable
     with patch("os.path.basename", return_value="calendar-app"):
         # Mock ArgumentParser for help
@@ -35,20 +35,22 @@ def test_help_output_when_no_command(mock_parse_args, mock_event_store):
 @patch("calendar_app.cli.CalendarEventStore")
 @patch("calendar_app.cli.setup_mcp_server")
 @patch("calendar_app.cli.argparse.ArgumentParser.parse_args")
-def test_mcp_default_when_no_command_with_mcp_executable(mock_parse_args, mock_setup_mcp, mock_event_store):
+def test_mcp_default_when_no_command_with_mcp_executable(
+    mock_parse_args, mock_setup_mcp, mock_event_store
+):
     """Test CLI runs MCP server when no command is provided with the MCP executable."""
     # Setup mock without the 'func' attribute to simulate no command
     mock_args = MagicMock(spec=[])
     mock_parse_args.return_value = mock_args
-    
+
     # Mock event store
     mock_event_store_instance = MagicMock()
     mock_event_store.return_value = mock_event_store_instance
-    
+
     # Mock MCP server
     mock_mcp = MagicMock()
     mock_setup_mcp.return_value = mock_mcp
-    
+
     # Mock os.path.basename to simulate calendar-app-mcp executable
     with patch("os.path.basename", return_value="calendar-app-mcp"):
         # Mock print to avoid output during tests
@@ -121,19 +123,19 @@ def test_mcp_subcommand(mock_print, mock_parse_args, mock_setup_mcp, mock_event_
     assert mock_print.call_count >= 2
     assert any("Starting MCP server" in call[0][0] for call in mock_print.call_args_list)
     assert all(call[1]["file"] == sys.stderr for call in mock_print.call_args_list)
-    
+
     # Reset mocks for quiet=True test
     mock_print.reset_mock()
     mock_setup_mcp.reset_mock()
     mock_mcp.reset_mock()
-    
+
     # Test with quiet=True
     cmd_mcp(mock_args, mock_event_store_instance, quiet=True)
-    
+
     # Verify behavior
     mock_setup_mcp.assert_called_once_with(mock_event_store_instance)
     mock_mcp.run.assert_called_once_with("stdio")
-    
+
     # Verify no print messages when quiet=True
     mock_print.assert_not_called()
 

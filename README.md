@@ -19,6 +19,24 @@ Once running, Claude can interact with your calendar data through the MCP protoc
 - Access reminders
 - Filter events by calendar, date range, and more
 
+### MCP Tools and Resources
+
+This package provides several MCP tools and resources:
+
+#### Tools
+- `get_events`: Retrieve events for a specific date range
+- `get_reminders`: Retrieve reminders for a specific date range
+- `list_calendars`: List all available calendars
+- `get_today_summary`: Get a summary of today's events and reminders
+- `search`: Search for events and reminders containing a specific term
+
+#### Resources
+- `calendar://events/{date}`: Access events for a specific date
+- `calendar://calendars`: Access the list of available calendars
+
+#### Prompts
+- `daily_agenda`: Generate a prompt for reviewing your daily schedule
+
 ## Features
 
 - Access macOS Calendar.app events and reminders
