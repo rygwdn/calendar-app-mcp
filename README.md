@@ -8,7 +8,8 @@ This package can be run as an MCP server to integrate with Claude and other AI a
 
 ```bash
 # Run as MCP server for AI assistant integration
-uv run calendar-app mcp
+uvx calendar-app-mcp   # Automatically runs as MCP server with no arguments
+uvx calendar-app-mcp mcp   # Explicitly runs the MCP server
 ```
 
 Once running, Claude can interact with your calendar data through the MCP protocol, allowing it to:
@@ -28,10 +29,42 @@ Once running, Claude can interact with your calendar data through the MCP protoc
 ## Installation
 
 ```bash
+# Install from PyPI
+pip install calendar-app-mcp
+
+# Using uv
+uv pip install calendar-app-mcp
+
+# Using uvx (direct execution without installation)
+uvx calendar-app-mcp calendars
+uvx calendar-app-mcp mcp
+```
+
+### Available Command Names
+
+After installation, the package provides two command-line executables:
+
+```bash
+# General-purpose calendar app tool - shows help when run without arguments
+calendar-app
+
+# MCP-focused variant - defaults to running the MCP server when no arguments are provided
+calendar-app-mcp
+```
+
+Both commands support the same subcommands, but `calendar-app-mcp` is optimized for use as an MCP server.
+
+### Development Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/rygwdn/calendar-app-mcp.git
+cd calendar-app-mcp
+
 # Install uv package manager if not already installed
 # https://github.com/astral-sh/uv
 
-# Install the package
+# Install the package in development mode
 uv install -e .
 
 # Install with development dependencies (for testing)
@@ -44,22 +77,22 @@ In addition to functioning as an MCP server, this package can be used as a comma
 
 ```bash
 # List available calendars
-uv run calendar-app calendars
+uvx calendar-app-mcp calendars
 
 # Get today's events and reminders
-uv run calendar-app today
+uvx calendar-app-mcp today
 
 # Get only events
-uv run calendar-app events
+uvx calendar-app-mcp events
 
 # Get only reminders
-uv run calendar-app reminders
+uvx calendar-app-mcp reminders
 
 # Get both events and reminders
-uv run calendar-app all
+uvx calendar-app-mcp all
 
 # Show JSON schema
-uv run calendar-app schema
+uvx calendar-app-mcp schema
 ```
 
 ### Command Options
@@ -68,22 +101,22 @@ Most subcommands accept these options:
 
 ```bash
 # Output in JSON format (default is markdown)
-uv run calendar-app events --json
+uvx calendar-app-mcp events --json
 
 # Filter by date range
-uv run calendar-app events --from 2024-12-01 --to 2024-12-31
+uvx calendar-app-mcp events --from 2024-12-01 --to 2024-12-31
 
 # Filter by specific calendars
-uv run calendar-app events --calendars "Work" "Personal"
+uvx calendar-app-mcp events --calendars "Work" "Personal"
 
 # Only show all-day events
-uv run calendar-app events --all-day-only
+uvx calendar-app-mcp events --all-day-only
 
 # Only show busy events
-uv run calendar-app events --busy-only
+uvx calendar-app-mcp events --busy-only
 
 # Include completed reminders
-uv run calendar-app reminders --include-completed
+uvx calendar-app-mcp reminders --include-completed
 ```
 
 ## Development

@@ -18,11 +18,12 @@ from calendar_app.utils.date_utils import get_date_range
 class CalendarEventStore:
     """Class to handle calendar event store operations."""
 
-    def __init__(self) -> None:
+    def __init__(self, quiet=False) -> None:
         # Create event store
         self.event_store = EKEventStore.alloc().init()
         self.event_authorized = False
         self.reminder_authorized = False
+        self.quiet = quiet
         self.request_authorization()
 
     def request_authorization(self) -> None:
@@ -31,19 +32,20 @@ class CalendarEventStore:
         event_result = {"authorized": False, "complete": False}
         reminder_result = {"authorized": False, "complete": False}
 
-        print("Requesting access to your calendars and reminders...", file=sys.stderr)
+        if not self.quiet:
+            print("Requesting access to your calendars and reminders...", file=sys.stderr)
 
         # Define callbacks
         def event_callback(granted, error) -> None:
             event_result["authorized"] = granted
             event_result["complete"] = True
-            if error:
+            if error and not self.quiet:
                 print(f"Event authorization error: {error}", file=sys.stderr)
 
         def reminder_callback(granted, error) -> None:
             reminder_result["authorized"] = granted
             reminder_result["complete"] = True
-            if error:
+            if error and not self.quiet:
                 print(f"Reminder authorization error: {error}", file=sys.stderr)
 
         # Request access to calendars
@@ -57,7 +59,9 @@ class CalendarEventStore:
         timeout = 10  # seconds
         start_time = time.time()
 
-        print("Waiting for authorization responses...", file=sys.stderr)
+        if not self.quiet:
+            print("Waiting for authorization responses...", file=sys.stderr)
+            
         while not (event_result["complete"] and reminder_result["complete"]):
             # Run the run loop for a short time to process callbacks
             NSRunLoop.currentRunLoop().runMode_beforeDate_(
@@ -66,16 +70,17 @@ class CalendarEventStore:
 
             # Check for timeout
             if time.time() - start_time > timeout:
-                print("Timed out waiting for authorization", file=sys.stderr)
+                if not self.quiet:
+                    print("Timed out waiting for authorization", file=sys.stderr)
                 break
 
         self.event_authorized = event_result["authorized"]
         self.reminder_authorized = reminder_result["authorized"]
 
-        if self.event_authorized:
+        if self.event_authorized and not self.quiet:
             print("Calendar access authorized", file=sys.stderr)
 
-        if self.reminder_authorized:
+        if self.reminder_authorized and not self.quiet:
             print("Reminders access authorized", file=sys.stderr)
 
     def get_calendars(self):
@@ -199,7 +204,8 @@ class CalendarEventStore:
 
                     # Check for timeout
                     if time.time() - start_time > timeout:
-                        print("Timed out waiting for reminders", file=sys.stderr)
+                        if not self.quiet:
+                            print("Timed out waiting for reminders", file=sys.stderr)
                         break
 
                 # Format reminders

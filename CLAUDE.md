@@ -3,15 +3,19 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Commands
-- Run calendar app: `uv run calendar-app`
-- Run as MCP server: `uv run calendar-app mcp`
-- List calendars: `uv run calendar-app calendars`
-- JSON schema: `uv run calendar-app schema`
+- Run calendar app: `uv run calendar-app` or `uvx calendar-app`
+- Run as MCP server: `uv run calendar-app mcp`, `uvx calendar-app-mcp` (no args needed), or `uvx calendar-app-mcp mcp`
+- List calendars: `uv run calendar-app calendars` or `uvx calendar-app-mcp calendars`
+- JSON schema: `uv run calendar-app schema` or `uvx calendar-app-mcp schema`
 - Format output: Add `--json` flag (default is markdown)
 - Run tests: `uv run pytest`
 - Run tests with linting: `uv run pytest --black --ruff`
 - Generate lock file with PyPI: `UV_NO_CONFIG=1 uv lock`
 - Install dependencies with PyPI: `UV_NO_CONFIG=1 uv install`
+- Install in development mode: `UV_NO_CONFIG=1 uv pip install -e .[dev]`
+- Build package: `UV_NO_CONFIG=1 uv run build`
+- Upload to TestPyPI: `UV_NO_CONFIG=1 uv run twine upload --repository testpypi dist/*`
+- Upload to PyPI: `UV_NO_CONFIG=1 uv run twine upload dist/*`
 
 ## Code Style Guidelines
 - **Imports**: Group standard library imports first, followed by third-party imports

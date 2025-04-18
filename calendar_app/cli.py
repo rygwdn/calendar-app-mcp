@@ -126,17 +126,23 @@ def cmd_schema(args, event_store) -> None:
     print(json.dumps(get_json_schema(), indent=2))
 
 
-def cmd_mcp(args, event_store) -> None:
+def cmd_mcp(args, event_store, quiet=False) -> None:
     """Command handler for 'mcp' subcommand."""
     # Set up and run the MCP server using stdio
     mcp = setup_mcp_server(event_store)
-    print("Starting MCP server using stdin/stdout...", file=sys.stderr)
-    print("Connect Claude Desktop to this process", file=sys.stderr)
+    if not quiet:
+        print("Starting MCP server using stdin/stdout...", file=sys.stderr)
+        print("Connect Claude Desktop to this process", file=sys.stderr)
     mcp.run("stdio")
 
 
 def main() -> None:
     """Main function to get and display calendar events and reminders."""
+    # Check which command was used to invoke the script
+    import os
+    program_name = os.path.basename(sys.argv[0])
+    mcp_default = program_name == "calendar-app-mcp"
+    
     # Create main parser
     parser = argparse.ArgumentParser(description="Calendar app for events and reminders")
 
@@ -209,13 +215,20 @@ def main() -> None:
     # Parse arguments
     args = parser.parse_args()
 
-    # If no command is provided, show help and exit
-    if not hasattr(args, "func"):
-        parser.print_help()
-        return
+    # Get quiet flag for mcp
+    quiet = mcp_default and not hasattr(args, "func")
+    
+    # Create event store with quiet flag for MCP mode
+    event_store = CalendarEventStore(quiet=quiet)
 
-    # Create event store
-    event_store = CalendarEventStore()
+    # If no command is provided, check which tool was used
+    if not hasattr(args, "func"):
+        if mcp_default:
+            # Run MCP in quiet mode
+            cmd_mcp(args, event_store, quiet=True)
+        else:
+            parser.print_help()
+        return
 
     # Call the appropriate function with arguments
     args.func(args, event_store)
