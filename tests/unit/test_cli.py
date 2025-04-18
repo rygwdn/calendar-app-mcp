@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import sys
 from unittest.mock import patch, MagicMock, call
 
@@ -13,20 +14,52 @@ from calendar_app.cli import main
 @patch("calendar_app.cli.CalendarEventStore")
 @patch("calendar_app.cli.argparse.ArgumentParser.parse_args")
 def test_help_output_when_no_command(mock_parse_args, mock_event_store):
-    """Test CLI shows help when no command is provided."""
+    """Test CLI shows help when no command is provided with regular executable."""
     # Setup mock without the 'func' attribute to simulate no command
     mock_args = MagicMock(spec=[])
     mock_parse_args.return_value = mock_args
+    
+    # Mock os.path.basename to simulate regular calendar-app executable
+    with patch("os.path.basename", return_value="calendar-app"):
+        # Mock ArgumentParser for help
+        with patch("calendar_app.cli.argparse.ArgumentParser.print_help") as mock_print_help:
+            # Call main function
+            main()
 
-    # Mock ArgumentParser for help
-    with patch("calendar_app.cli.argparse.ArgumentParser.print_help") as mock_print_help:
-        # Call main function
-        main()
+            # Verify behavior
+            mock_print_help.assert_called_once()
+            # EventStore is now created with quiet=False because it comes before the command check
+            mock_event_store.assert_called_once_with(quiet=False)
 
-        # Verify behavior
-        mock_print_help.assert_called_once()
-        # Verify event store was not created
-        mock_event_store.assert_not_called()
+
+@patch("calendar_app.cli.CalendarEventStore")
+@patch("calendar_app.cli.setup_mcp_server")
+@patch("calendar_app.cli.argparse.ArgumentParser.parse_args")
+def test_mcp_default_when_no_command_with_mcp_executable(mock_parse_args, mock_setup_mcp, mock_event_store):
+    """Test CLI runs MCP server when no command is provided with the MCP executable."""
+    # Setup mock without the 'func' attribute to simulate no command
+    mock_args = MagicMock(spec=[])
+    mock_parse_args.return_value = mock_args
+    
+    # Mock event store
+    mock_event_store_instance = MagicMock()
+    mock_event_store.return_value = mock_event_store_instance
+    
+    # Mock MCP server
+    mock_mcp = MagicMock()
+    mock_setup_mcp.return_value = mock_mcp
+    
+    # Mock os.path.basename to simulate calendar-app-mcp executable
+    with patch("os.path.basename", return_value="calendar-app-mcp"):
+        # Mock print to avoid output during tests
+        with patch("calendar_app.cli.print"):
+            # Call main function
+            main()
+
+            # Verify behavior - print_help should not be called
+            mock_event_store.assert_called_once_with(quiet=True)
+            mock_setup_mcp.assert_called_once_with(mock_event_store_instance)
+            mock_mcp.run.assert_called_once_with("stdio")
 
 
 @patch("calendar_app.cli.CalendarEventStore")
@@ -77,16 +110,32 @@ def test_mcp_subcommand(mock_print, mock_parse_args, mock_setup_mcp, mock_event_
     # Call the cmd_mcp function directly
     from calendar_app.cli import cmd_mcp
 
+    # Test with default quiet=False
     cmd_mcp(mock_args, mock_event_store_instance)
 
     # Verify behavior
     mock_setup_mcp.assert_called_once_with(mock_event_store_instance)
     mock_mcp.run.assert_called_once_with("stdio")
 
-    # Verify print messages
+    # Verify print messages when quiet=False
     assert mock_print.call_count >= 2
     assert any("Starting MCP server" in call[0][0] for call in mock_print.call_args_list)
     assert all(call[1]["file"] == sys.stderr for call in mock_print.call_args_list)
+    
+    # Reset mocks for quiet=True test
+    mock_print.reset_mock()
+    mock_setup_mcp.reset_mock()
+    mock_mcp.reset_mock()
+    
+    # Test with quiet=True
+    cmd_mcp(mock_args, mock_event_store_instance, quiet=True)
+    
+    # Verify behavior
+    mock_setup_mcp.assert_called_once_with(mock_event_store_instance)
+    mock_mcp.run.assert_called_once_with("stdio")
+    
+    # Verify no print messages when quiet=True
+    mock_print.assert_not_called()
 
 
 @patch("calendar_app.cli.CalendarEventStore")
