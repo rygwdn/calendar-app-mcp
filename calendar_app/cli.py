@@ -1,6 +1,7 @@
 """Command-line interface for calendar events and reminders."""
 
 import argparse
+import importlib.metadata
 import json
 import sys
 
@@ -10,6 +11,12 @@ from calendar_app.renderers.calendar_list import CalendarListTemplateRenderer
 from calendar_app.renderers.markdown import format_as_markdown
 from calendar_app.tools.mcp_server import setup_mcp_server
 from calendar_app.utils.date_utils import parse_date
+
+# Get version from package metadata
+try:
+    __version__ = importlib.metadata.version("calendar-app-mcp")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "unknown"
 
 
 def setup_common_parser(parser):
@@ -126,6 +133,11 @@ def cmd_schema(args, event_store) -> None:
     print(json.dumps(get_json_schema(), indent=2))
 
 
+def cmd_version(args, event_store) -> None:
+    """Command handler for 'version' subcommand."""
+    print(f"calendar-app-mcp version {__version__}")
+
+
 def cmd_mcp(args, event_store, quiet=False) -> None:
     """Command handler for 'mcp' subcommand."""
     # Set up and run the MCP server using stdio
@@ -144,7 +156,13 @@ def main() -> None:
     mcp_default = program_name == "calendar-app-mcp"
     
     # Create main parser
-    parser = argparse.ArgumentParser(description="Calendar app for events and reminders")
+    parser = argparse.ArgumentParser(
+        description=f"Calendar app for events and reminders (v{__version__})",
+        epilog=f"Calendar-app-mcp version {__version__}"
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
 
     # Create subparsers
     subparsers = parser.add_subparsers(
@@ -207,6 +225,10 @@ def main() -> None:
     # 'schema' subcommand
     schema_parser = subparsers.add_parser("schema", help="Show the JSON schema for the output")
     schema_parser.set_defaults(func=cmd_schema)
+
+    # 'version' subcommand
+    version_parser = subparsers.add_parser("version", help="Show version information")
+    version_parser.set_defaults(func=cmd_version)
 
     # 'mcp' subcommand
     mcp_parser = subparsers.add_parser("mcp", help="Run as an MCP server")
