@@ -162,6 +162,23 @@ UV_NO_CONFIG=1 uv install
 
 The `UV_NO_CONFIG=1` environment variable tells UV to ignore any system-level configuration and use only the public PyPI registry.
 
+### Publishing to PyPI
+
+To publish a new version to PyPI:
+
+1. Update the version number in `pyproject.toml`
+2. Run tests to verify everything works: `uv run pytest --black --ruff`
+3. Build the package: `UV_NO_CONFIG=1 uv run python -m build`
+4. Upload to PyPI:
+   ```bash
+   UV_NO_CONFIG=1 uv run twine upload dist/calendar_app_mcp-X.Y.Z*
+   ```
+   Replace X.Y.Z with the actual version number.
+5. Verify the package can be installed: `uvx calendar-app-mcp@latest --version`
+6. Create and push a version tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
+
+See the `CLAUDE.md` file for more detailed instructions including testing with TestPyPI.
+
 ### Running Tests
 
 Run all tests:

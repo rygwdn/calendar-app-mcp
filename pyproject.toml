@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "calendar-app-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "Calendar app MCP for accessing macOS Calendar events and reminders"
 readme = "README.md"
 requires-python = ">= 3.12"

@@ -14,9 +14,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Generate lock file with PyPI: `UV_NO_CONFIG=1 uv lock`
 - Install dependencies with PyPI: `UV_NO_CONFIG=1 uv install`
 - Install in development mode: `UV_NO_CONFIG=1 uv pip install -e .[dev]`
-- Build package: `UV_NO_CONFIG=1 uv run build`
-- Upload to TestPyPI: `UV_NO_CONFIG=1 uv run twine upload --repository testpypi dist/*`
-- Upload to PyPI: `UV_NO_CONFIG=1 uv run twine upload dist/*`
+## Publishing Process
+
+To publish a new version to PyPI, follow these steps:
+
+1. Update version number in `pyproject.toml`
+2. Run tests to make sure everything works: `uv run pytest --black --ruff`
+3. Build the package: `UV_NO_CONFIG=1 uv run python -m build`
+4. Test on TestPyPI first (optional):
+   ```bash
+   # Upload to TestPyPI
+   UV_NO_CONFIG=1 uv run twine upload --repository testpypi dist/calendar_app_mcp-X.Y.Z*
+   
+   # Install from TestPyPI to test
+   UV_NO_CONFIG=1 uv pip install --index-url https://test.pypi.org/simple/ calendar-app-mcp==X.Y.Z
+   ```
+5. Upload to PyPI (production):
+   ```bash
+   UV_NO_CONFIG=1 uv run twine upload dist/calendar_app_mcp-X.Y.Z*
+   ```
+6. Verify installation: `uvx calendar-app-mcp@latest --version`
+7. Create and push a tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
 
 ## Code Style Guidelines
 - **Imports**: Group standard library imports first, followed by third-party imports
