@@ -1,12 +1,18 @@
 """MCP server for calendar events and reminders."""
 
 import datetime
+import json
 
 import fastmcp
 
 from calendar_app.renderers.calendar_list import CalendarListTemplateRenderer
 from calendar_app.renderers.markdown import format_as_markdown
-from calendar_app.utils.date_utils import parse_date
+from calendar_app.utils.date_utils import (
+    parse_date,
+    get_current_datetime,
+    convert_timezone,
+    list_common_timezones,
+)
 
 
 def setup_mcp_server(event_store):
@@ -383,5 +389,133 @@ What should I focus on today? Any conflicts or tight schedules to be aware of?
         ctx.info(f"Found {event_calendar_count} event calendars and {reminder_calendar_count} reminder calendars")
         
         return calendars_data
+    
+    # Date and time tools
+    
+    @mcp.tool()
+    def get_current_time(ctx: fastmcp.Context, timezone: str = None):
+        """
+        Get the current date and time, optionally in a specific timezone.
+        
+        Args:
+            ctx: Context object for the MCP request
+            timezone: Optional timezone name (e.g., 'America/New_York', 'Europe/London')
+                     If not provided, uses the system's local timezone.
+        
+        Returns:
+            Current date and time information
+        """
+        ctx.info(f"Getting current time for timezone: {timezone or 'local'}")
+        
+        result = get_current_datetime(timezone)
+        
+        if "error" in result:
+            ctx.warning(f"Error getting time: {result['error']}")
+        else:
+            ctx.info(f"Current time is {result['iso_datetime']} in timezone {result['timezone']['name']}")
+        
+        return result
+    
+    @mcp.tool()
+    def convert_time(
+        ctx: fastmcp.Context,
+        datetime_str: str,
+        from_timezone: str,
+        to_timezone: str,
+        datetime_format: str = "%Y-%m-%d %H:%M:%S"
+    ):
+        """
+        Convert a time from one timezone to another.
+        
+        Args:
+            ctx: Context object for the MCP request
+            datetime_str: Datetime string to convert (e.g., "2024-04-18 15:30:00")
+            from_timezone: Source timezone (IANA format like 'America/New_York')
+            to_timezone: Target timezone (IANA format like 'Europe/London')
+            datetime_format: Format of the datetime string (default: "%Y-%m-%d %H:%M:%S")
+            
+        Returns:
+            Conversion result with original and converted times
+        """
+        ctx.info(f"Converting time '{datetime_str}' from {from_timezone} to {to_timezone}")
+        
+        result = convert_timezone(
+            dt_str=datetime_str,
+            from_timezone=from_timezone,
+            to_timezone=to_timezone,
+            dt_format=datetime_format
+        )
+        
+        if "error" in result:
+            ctx.warning(f"Error converting time: {result['error']}")
+        else:
+            ctx.info(f"Converted time is {result['converted']['datetime']} " +
+                     f"({result['converted']['timezone']})")
+        
+        return result
+    
+    @mcp.tool()
+    def list_timezones(ctx: fastmcp.Context, region: str = None):
+        """
+        List available timezones, optionally filtered by region.
+        
+        Args:
+            ctx: Context object for the MCP request
+            region: Optional region to filter by (e.g., 'America', 'Europe', 'Asia')
+                  If not provided, returns all regions and their timezones.
+        
+        Returns:
+            List of timezones grouped by region
+        """
+        ctx.info("Listing available timezones")
+        
+        result = list_common_timezones()
+        
+        if region:
+            ctx.info(f"Filtering timezones by region: {region}")
+            if region in result["timezones_by_region"]:
+                filtered_result = {
+                    "regions": [region],
+                    "timezones_by_region": {region: result["timezones_by_region"][region]},
+                    "total_count": len(result["timezones_by_region"][region]),
+                }
+                result = filtered_result
+            else:
+                available_regions = ", ".join(result["regions"])
+                ctx.warning(f"Region '{region}' not found. Available regions: {available_regions}")
+                return {
+                    "error": f"Region '{region}' not found",
+                    "available_regions": result["regions"],
+                }
+        else:
+            ctx.info(f"Found {result['total_count']} timezones in {len(result['regions'])} regions")
+        
+        return result
+    
+    @mcp.resource("datetime://current/{timezone}")
+    def current_time_resource(ctx: fastmcp.Context, timezone: str = None):
+        """
+        Resource for getting the current time in a specific timezone.
+        
+        Args:
+            ctx: Context object for the MCP request
+            timezone: Timezone name (IANA format, e.g., 'America/New_York')
+                     Use 'local' for the system's local timezone.
+        
+        Returns:
+            Current date and time information
+        """
+        ctx.info(f"Accessing current time resource for timezone: {timezone}")
+        
+        # Handle special 'local' timezone case
+        if timezone and timezone.lower() == 'local':
+            timezone = None
+            
+        result = get_current_datetime(timezone)
+        
+        if "error" in result:
+            ctx.warning(f"Error getting time: {result['error']}")
+        
+        return result
         
     return mcp

@@ -29,10 +29,14 @@ This package provides several MCP tools and resources:
 - `list_calendars`: List all available calendars
 - `get_today_summary`: Get a summary of today's events and reminders
 - `search`: Search for events and reminders containing a specific term
+- `get_current_time`: Get the current date and time in any timezone
+- `convert_time`: Convert a time from one timezone to another
+- `list_timezones`: List available timezones, optionally filtered by region
 
 #### Resources
 - `calendar://events/{date}`: Access events for a specific date
 - `calendar://calendars`: Access the list of available calendars
+- `datetime://current/{timezone}`: Get the current time in a specific timezone
 
 #### Prompts
 - `daily_agenda`: Generate a prompt for reviewing your daily schedule

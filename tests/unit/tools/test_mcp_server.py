@@ -25,7 +25,7 @@ def test_setup_mcp_server(mock_fastmcp):
     mock_fastmcp.assert_called_once_with("Calendar Events")
 
     # Verify that tools were registered
-    assert mock_mcp.tool.call_count >= 5  # We have at least 5 tools
+    assert mock_mcp.tool.call_count >= 8  # We have at least 8 tools
 
     # Verify that the prompt function was registered
     assert mock_mcp.prompt.call_count >= 1  # We have at least 1 prompt
@@ -73,6 +73,9 @@ def test_mcp_tools_registered():
         "list_calendars",
         "get_today_summary",
         "search",
+        "get_current_time",
+        "convert_time",
+        "list_timezones",
     ]
 
     for tool in expected_tools:
@@ -82,6 +85,7 @@ def test_mcp_tools_registered():
     expected_resources = [
         "get_events_by_date",
         "get_calendar_list",
+        "current_time_resource",
     ]
 
     for resource in expected_resources:
