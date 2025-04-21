@@ -30,9 +30,6 @@ def test_setup_mcp_server(mock_fastmcp):
     # Verify that the prompt function was registered
     assert mock_mcp.prompt.call_count >= 1  # We have at least 1 prompt
 
-    # Verify that resource functions were registered
-    assert mock_mcp.resource.call_count >= 2  # We have at least 2 resources
-
     # Verify result
     assert result == mock_mcp
 
@@ -81,14 +78,4 @@ def test_mcp_tools_registered():
     for tool in expected_tools:
         assert tool in registered_tools, f"Expected tool {tool} not found in registered tools"
 
-    # Verify that all expected resources were registered
-    expected_resources = [
-        "get_events_by_date",
-        "get_calendar_list",
-        "current_time_resource",
-    ]
-
-    for resource in expected_resources:
-        assert (
-            resource in registered_resources
-        ), f"Expected resource {resource} not found in registered resources"
+    # No resources are expected in this version

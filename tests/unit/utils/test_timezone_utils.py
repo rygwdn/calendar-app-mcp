@@ -116,10 +116,8 @@ class TestConvertTimezone:
         # For UTC to NY in January, offset should typically be -5 hours
         # (though this can vary with DST, legislation changes, etc.)
         expected_hour = 7  # 12:00 UTC -> 07:00 EST
-        assert (
-            result["converted"]["datetime"].startswith("2023-01-01 07:00:00")
-            or "offset_hours" in result
-            and abs(result["offset_hours"] + 5) < 0.1
+        assert result["converted"]["datetime"].startswith("2023-01-01 07:00:00") or (
+            "offset_hours" in result and abs(result["offset_hours"] + 5) < 0.1
         )
 
     def test_convert_timezone_custom_format(self):
