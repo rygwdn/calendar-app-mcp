@@ -65,9 +65,7 @@ def format_event(event):
                     ),
                     "unknown",
                 ),
-                "is_organizer": (
-                    bool(event.organizer() and attendee.isEqual_(event.organizer()))
-                ),
+                "is_organizer": (bool(event.organizer() and attendee.isEqual_(event.organizer()))),
             }
             participants.append(participant)
 

@@ -61,7 +61,7 @@ class CalendarEventStore:
 
         if not self.quiet:
             print("Waiting for authorization responses...", file=sys.stderr)
-            
+
         while not (event_result["complete"] and reminder_result["complete"]):
             # Run the run loop for a short time to process callbacks
             NSRunLoop.currentRunLoop().runMode_beforeDate_(

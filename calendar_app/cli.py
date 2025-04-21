@@ -152,17 +152,16 @@ def main() -> None:
     """Main function to get and display calendar events and reminders."""
     # Check which command was used to invoke the script
     import os
+
     program_name = os.path.basename(sys.argv[0])
     mcp_default = program_name == "calendar-app-mcp"
-    
+
     # Create main parser
     parser = argparse.ArgumentParser(
         description=f"Calendar app for events and reminders (v{__version__})",
-        epilog=f"Calendar-app-mcp version {__version__}"
+        epilog=f"Calendar-app-mcp version {__version__}",
     )
-    parser.add_argument(
-        "--version", action="version", version=f"%(prog)s {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
     # Create subparsers
     subparsers = parser.add_subparsers(
@@ -239,7 +238,7 @@ def main() -> None:
 
     # Get quiet flag for mcp
     quiet = mcp_default and not hasattr(args, "func")
-    
+
     # Create event store with quiet flag for MCP mode
     event_store = CalendarEventStore(quiet=quiet)
 
